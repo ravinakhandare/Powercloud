@@ -1,36 +1,67 @@
 pipeline {
-    agent any 
+    agent any
+    
     tools {
         maven 'local_maven'
     }
+     environment {     
+         DOCKERHUB_CREDENTIALS= credentials('docker-hub')     
+       } 
 
-     environment {
-        AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
-    }      
-
-    stages {
-        stage('Build') {
-            steps{
-            echo 'build'
-            }
-        }
-        stage('Test') {
+stages{
+        stage('Build'){
             steps {
-           echo 'test'
-            }
-        }
-        stage('Publish') {
-            steps {
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                sh 'mvn clean package'
             }
             post {
                 success {
-                    //archiveArtifacts './web/target/*.war'
-                    sh 'aws configure set region ap-south-1'
-                    sh 'aws s3 cp ./web/target/*.war s3://powercloud21'
+                    echo 'Archiving the artifacts'
+                    archiveArtifacts artifacts: '**/target/*.war'
                 }
             }
         }
+    stage('Build Docker Image') {         
+      steps{                
+	sh 'docker build -t jyotiranswain/powercloud:$BUILD_NUMBER .'           
+        echo 'Build Image Completed'                
+      }           
+    }
+    stage('Login to Docker Hub') {         
+      steps{                            
+	sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                 
+	echo 'Login Completed'                
+      }           
+    }
+    stage('Scan Docker Image with Trivy') {         
+      steps{                            
+	sh 'trivy jyotiranswain/powercloud:$BUILD_NUMBER'              
+      }           
+    }    
+    stage('Push Image to Docker Hub') {         
+      steps{                            
+	sh 'docker push jyotiranswain/powercloud:$BUILD_NUMBER'                 
+  echo 'Push Image Completed'       
+      }           
+    }
+  stage('Run Container on Dev Server') {         
+    steps{
+	       script {
+      def dockerdel = "docker rm -f myweb"
+      def dockerRun = "docker run -p 8080:8080 -d --name myweb jyotiranswain/powercloud:$BUILD_NUMBER"
+  
+	    sshagent(['docker']) {
+       sh "ssh -o StrictHostKeyChecking=no ec2-user@3.108.67.8 ${dockerdel}"
+       sh "ssh -o StrictHostKeyChecking=no ec2-user@3.108.67.8 ${dockerRun}"
+}
+	       }
+    }       
+    }   
+
+  } //stages 
+  post{
+    always {  
+      sh 'docker logout'           
+    }      
+
     }
 }
