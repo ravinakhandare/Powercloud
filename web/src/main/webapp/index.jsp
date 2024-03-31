@@ -12,6 +12,7 @@
 </head>
 <body>
   <h1>DevOps and Cloud</h1>
+  <h2>DOcker Class</h2>
   <p>
     Join with us! Subscribe my channel
   </p>
