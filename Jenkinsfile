@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        maven 'local_maven -Dmaven.test.skip=true'
+        maven 'local_maven'
     }
      environment {     
          DOCKERHUB_CREDENTIALS= credentials('docker-hub')     
@@ -11,7 +11,7 @@ pipeline {
 stages{
         stage('Build'){
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
             post {
                 success {
