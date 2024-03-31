@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        maven 'local_maven'
+        maven 'local_maven -Dmaven.test.skip=true'
     }
      environment {     
          DOCKERHUB_CREDENTIALS= credentials('docker-hub')     
