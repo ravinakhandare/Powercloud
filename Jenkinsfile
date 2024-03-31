@@ -50,7 +50,7 @@ stages{
       def dockerRun = "docker run -p 8080:8080 -d --name myweb jyotiranswain/powercloud:$BUILD_NUMBER"
   
 	    sshagent(['docker']) {
-       sh "ssh -o StrictHostKeyChecking=no jenkins@318.141.187.150 ${dockerdel}"
+       //sh "ssh -o StrictHostKeyChecking=no jenkins@318.141.187.150 ${dockerdel}"
        sh "ssh -o StrictHostKeyChecking=no jenkins@18.141.187.150 ${dockerRun}"
 }
 	       }
