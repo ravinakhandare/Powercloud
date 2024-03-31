@@ -34,7 +34,7 @@ stages{
     }
     stage('Scan Docker Image with Trivy') {         
       steps{                            
-	sh 'trivy jyotiranswain/powercloud:$BUILD_NUMBER'              
+	sh 'trivy image jyotiranswain/powercloud:$BUILD_NUMBER'              
       }           
     }    
     stage('Push Image to Docker Hub') {         
