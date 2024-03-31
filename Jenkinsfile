@@ -46,11 +46,11 @@ stages{
   stage('Run Container on Dev Server') {         
     steps{
 	       script {
-      //def dockerdel = "docker rm -f myweb"
+      def dockerdel = "docker rm -f myweb"
       def dockerRun = "docker run -p 8080:8080 -d --name myweb jyotiranswain/powercloud:$BUILD_NUMBER"
   
 	    sshagent(['docker']) {
-       //sh "ssh -o StrictHostKeyChecking=no jenkins@318.141.187.150 ${dockerdel}"
+       sh "ssh -o StrictHostKeyChecking=no ubuntu@318.141.187.150 ${dockerdel}"
        sh "ssh -o StrictHostKeyChecking=no ubuntu@18.141.187.150 ${dockerRun}"
 }
 	       }
