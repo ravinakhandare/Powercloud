@@ -28,7 +28,7 @@ pipeline {
                 success {
                     //archiveArtifacts './web/target/*.war'
                     sh 'aws configure set region us-east-1'
-                    sh 'aws s3 cp ./web/target/*.war s3://j2-bucket'
+                    sh 'aws s3 cp ./web/target/*.war s3://s3-bucket-pr'
                 }
             }
         }
