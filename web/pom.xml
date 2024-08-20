@@ -17,8 +17,7 @@
             <groupId>training.taylor.time-tracker</groupId>
             <artifactId>time-tracker-core</artifactId>
             <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
+                <version>${project.version}</version> 
             </configuration> 
         </dependency>
     </dependencies>
